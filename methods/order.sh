@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
 
-response_order=($(curl -s \
+response_order=$(curl -s \
   -X GET \
   "https://hypixel.net/forums/59/index.rss" \
-  | grep -oP '(?<=<guid isPermaLink="false">)[^<]*' \
-))
+)
 
-RESPONSE "ORDER" "${response_order[*]}"
+readarray -t posts < <(grep -oP '(?<=<guid isPermaLink="false">)[^<]*' <<< "${response_order}")
+readarray -t dates < <(grep -oP '(?<=<pubDate>)[^<]*' <<< "${response_order}")
+RESPONSE "ORDER-POSTS" "${posts[*]}"
+RESPONSE "ORDER-DATES" "${dates[*]}"
 
 post_order="1000"
-for post in "${!response_order[@]}"; do
-    if [ ${response_order["${post}"]} == "${post_id}" ]; then
-        echo [ ${response_order["${post}"]} == "${post_id}" ]
-        echo $post
+
+for post in "${!posts[@]}"; do
+    if [ ${posts["${post}"]} == "${post_id}" ]; then
         post_order="$((post+1))"
+        last_reply_date="${dates["$((post+1))"]}"
         break
     fi
 done

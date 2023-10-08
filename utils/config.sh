@@ -31,8 +31,8 @@ post_id=0000000
 #    The message that will be sent
 message="bump"
 
-#    Minimum time from last message to bump (minutes)
-min_time=60
+#    [30+]Minimum time from last message to bump (seconds)
+min_time=3600
 #    Sticky (pinned) posts are never counted towards post order
 #    [2-20] Will send a bump if the order is greater than this value and more than min_time has passed since the last message
 min_order=5

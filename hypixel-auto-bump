@@ -9,18 +9,24 @@ source $SCRIPT_DIR/utils/options.sh
 
 while true; do
   INFO "Running the order check"
+
   source $SCRIPT_DIR/methods/order.sh
-  if [[ "${post_order}" -ge "${min_order}" && ( "1000" -ge "${min_time}" || "${post_order}" -ge "${max_order}" ) ]]; then
+  let "time_since_last_reply = ($(date +%s) - $(date -d "${last_reply_date}" +%s))"
+
+  if [[ "${post_order}" -ge "${min_order}" && ( "${time_since_last_reply}" -ge "${min_time}" || "${post_order}" -ge "${max_order}" ) ]]; then
     INFO "The conditions for the bump have been met, starting"
+
     source $SCRIPT_DIR/methods/csrf.sh
     if [[ -v last_reply ]]; then
       source $SCRIPT_DIR/methods/delete.sh
     fi
     source $SCRIPT_DIR/methods/reply.sh
+
     INFO "Finished the bump, waiting for the next order check"
   else
     INFO "The conditions for the bump were not met, waiting for the next order check"
   fi
+
   sleep 80
   SPACE
 done
